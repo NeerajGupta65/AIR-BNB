@@ -1,0 +1,31 @@
+<% layout('/layouts/boilerplate') %>
+<body>
+    <% success %>
+    <div class="row1 mt-2 offset-5">
+    <h3><b>ALL Listings</b></h3>
+    <!-- <form action="/listings/new" method="GET">
+        <button>Create New Listing</button> -->
+        </div>
+
+
+<div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 row-cols-xs-1 ">
+    <% for (let listing of listings) { %>
+        <a href="/listings/<%= listing.id %>" class="style-link">
+        <div class="card col listing-card">
+    <img src="<%= listing.image && listing.image.url ? listing.image.url : listing.image %>" class="card-img-top" alt="listing_image" style="height:20rem">
+        <div class="card-img-overlay"></div>
+            <div class="card-body">
+                <p class="card-text">
+                   <b> <%= listing.title %> </b> <br>
+                    ₹<%= listing.price ? listing.price.toLocaleString("en-IN") : '0' %>/night
+                </p>
+            </div>
+        </div>
+    </a>
+    <% } %>
+        </div>
+</div>
+
+
+
+
