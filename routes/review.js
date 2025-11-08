@@ -5,11 +5,12 @@ const listen = require('../models/listening.js');
 const Review = require('../models/review.js');
 const wrapasync = require('../utils/wrapasync.js');
 const expresserror = require('../utils/expresserror.js');
+const { isloggedin } = require('../middleware.js');
 const { reviewschema } = require('../schema.js');
 
 
 const validatereview = (req, res, next) => {
-  let { error } = reviewschema.validate(req.body);
+  let { error } = reviewschema.validate(req.body.review);
   console.log("Validation result:", error); 
   
   if(error){
@@ -23,9 +24,10 @@ const validatereview = (req, res, next) => {
 
 //review routes
 
-router.post('/',validatereview, wrapasync(async (req, res) => {
+router.post('/', isloggedin, validatereview, wrapasync(async (req, res) => {
   let listing = await listen.findById(req.params.id);
   let newreview = new Review(req.body.review);
+  newreview.author = req.user._id;  // Set the author to the current user
   listing.reviews.push(newreview);
   await newreview.save();
   await listing.save();
@@ -34,8 +36,13 @@ router.post('/',validatereview, wrapasync(async (req, res) => {
 }));
 
 //DELETE review
-router.delete('/:reviewId', wrapasync(async (req, res) => {
+router.delete('/:reviewId', isloggedin, wrapasync(async (req, res) => {
   let { id, reviewId } = req.params;
+  const review = await Review.findById(reviewId);
+  if (!review.author.equals(req.user._id)) {
+    req.flash('error', 'You do not have permission to delete this review');
+    return res.redirect(`/listings/${id}`);
+  }
   await listen.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });
   await Review.findByIdAndDelete(reviewId);
   req.flash('success', 'Review Deleted!');

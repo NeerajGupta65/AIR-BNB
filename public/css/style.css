@@ -1,4 +1,4 @@
-body{
+/* body{
   font-family: "Plus Jakarta Sans", sans-serif !important;
   font-optical-sizing: auto;
   font-weight: 400;
@@ -7,12 +7,25 @@ body{
   flex-direction: column;
   min-height: 100vh;
   overflow-y: scroll;
+  
 
+} */
+ body{
+  /* Keep all existing body styles */
+  font-family: "Plus Jakarta Sans", sans-serif !important;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  /* Remove 'overflow-y: scroll;' if you want the default scroll behavior */
 }
 
 .container{
     flex:1;
 }
+
 
 
 h1{
@@ -21,14 +34,20 @@ h1{
 .navbar{
     height:5rem;
     background-color: white;
-    margin-top: 50px
+  
 }
 
 
-footer {
+/* footer {
   position: fixed;
   bottom: 0;
   width: 100%;
+  margin-top: 4rem;
+} */
+ footer {
+  position: fixed !important;
+  bottom: 0 !important;
+  width: 100% !important;
 }
 
 
@@ -68,7 +87,7 @@ footer {
     text-align: center;
     display: flex;
     flex-direction: column;
-    height: 8rem;
+    height: 6rem;
     background-color: #ebebeb;
     align-items: center;
     justify-content: space-evenly;

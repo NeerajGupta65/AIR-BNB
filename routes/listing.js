@@ -5,6 +5,7 @@ const listen = require('../models/listening.js');
 const wrapasync = require('../utils/wrapasync.js');
 const expresserror = require('../utils/expresserror.js');
 const { listingsschema } = require('../schema.js');
+const { isloggedin } = require('../middleware.js');
 
 
 const validatelisting = (req, res, next) => {
@@ -27,32 +28,55 @@ router.get('/', wrapasync(async (req, res) => {
 }));
 
 //add new listing form
-router.get('/new', (req, res) => {
+router.get('/new' , isloggedin, (req, res) => {
   res.render('listings/new');
 });
 
 //Show individual listing details
 router.get("/:id", wrapasync(async (req,res)=>{
   let{id}=req.params;
-let listing=await listen.findById(id).populate('reviews');
-if(!listing){
-  req.flash('error', 'Listing Not Found!');
-  return res.redirect('/listings');
-}
-res.render('listings/show',{listing});
+  let listing = await listen.findById(id)
+    .populate({
+      path: 'reviews',
+      populate: {
+        path: 'author'
+      }
+    })
+    .populate({
+      path: 'owner',
+      model: 'User'
+    });
+  if(!listing){
+    req.flash('error', 'Listing Not Found!');
+    return res.redirect('/listings');
+  }
+  console.log("Full listing:", listing);
+  console.log("Owner info:", listing.owner);
+  if (!listing.owner) {
+    console.log("No owner found for listing");
+  }
+  res.render('listings/show',{listing});
 }));
 
 //create new listing
-router.post("/",validatelisting, wrapasync(async (req,res)=>{
-
+router.post("/", isloggedin, validatelisting, wrapasync(async (req,res)=>{
+  if (!req.user) {
+    req.flash('error', 'You must be logged in to create a listing');
+    return res.redirect('/login');
+  }
+  console.log("Current user:", req.user);
+  
   let{title,description,image,price,location,country}=req.body;
-  let newListing= new listen({
+  let newListing = new listen({
     title,
     description,
+    image,
     price,
     location,
-    country
+    country,
+    owner: req.user._id  // Make sure req.user._id exists
   });
+  console.log("New listing before save:", newListing);
   await newListing.save();
   req.flash('success', 'New Listing Created!');
 
@@ -61,7 +85,7 @@ router.post("/",validatelisting, wrapasync(async (req,res)=>{
 
 
 //edit listing form
-router.get("/:id/edit", wrapasync(async (req,res)=>{
+router.get("/:id/edit", isloggedin, wrapasync(async (req,res)=>{
   let {id}=req.params;
   let listing=await listen.findById(id);
   if(!listing){
@@ -72,7 +96,7 @@ router.get("/:id/edit", wrapasync(async (req,res)=>{
 }));
 
 //update listing
-router.put('/:id', wrapasync(async (req,res)=>{
+router.put('/:id', isloggedin, wrapasync(async (req,res)=>{
   let {id}=req.params;
   if(!req.body.listening){
      throw new expresserror(400,'Invalid Listing Data');
@@ -83,7 +107,7 @@ router.put('/:id', wrapasync(async (req,res)=>{
 }));
 
 //delete listing
-router.delete('/:id', wrapasync(async (req,res)=>{
+router.delete('/:id', isloggedin, wrapasync(async (req,res)=>{
   let {id}=req.params;
   await listen.findByIdAndDelete(id);
   req.flash('success', 'Listing Deleted!');

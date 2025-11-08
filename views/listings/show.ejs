@@ -9,6 +9,7 @@
   <div class="card-body">
    <p class="card-text">
    </p>
+      <p class="mb-3">Owned by: <i><%= listing.owner ? listing.owner.username : 'Anonymous' %></i></p>
    <p><b>Description:</b> <%= listing.description %></p>
   <p><b>Price:</b> &#8377;<%= listing.price ? listing.price.toLocaleString("en-IN") : "N/A" %>/night</p>
    <p><b>Location:</b> <%= listing.location %></p>
@@ -16,6 +17,7 @@
   </div>
 </div>
     <br>
+    <% if(currentUser && listing.owner && currentUser._id.equals(listing.owner._id)) { %>
     <div class="btns">
     <a href="/listings/<%= listing._id %>/edit" class="btn btn-dark col-1 add-btn">Edit</a>
    
@@ -23,18 +25,19 @@
         <button type="submit" class="btn btn-dark ">Delete</button>
     </form>
     </div>
+    <% } %>
     
     <div class="mb-3 mt-3">
         <hr/>
     <h4><b>Leave a Review</b></h4>
     <form action ="/listings/<%= listing._id %>/reviews" method="POST" novalidate class="needs-validation">
         <div class="mb-3 mt-3">
-            <label for ="rating" class="form-label">Rating</label><br>
-            <input type="range" name="reviews[rating]" min="1" max="5" class="form-range">
+            <label for="rating" class="form-label">Rating</label><br>
+            <input type="range" name="review[rating]" min="1" max="5" class="form-range" required>
         </div>
         <div class="mb-3 mt-3">
             <label for="comment" class="form-label">Comment</label><br>
-            <textarea name="reviews[comment]" cols="30" rows="5" class="form-control" required></textarea> 
+            <textarea name="review[comment]" cols="30" rows="5" class="form-control" required></textarea> 
         </div>
         <div class="invalid-feedback">Please enter a comment.</div>
         <button type="submit" class="btn btn-outline-dark mt-2">Submit Review</button>
@@ -43,18 +46,18 @@
 <hr/>
 
 <P><b> ALL Reviews</b></P>
-<div class="row">
+<div class="row mb-3">
     <% for( let review of listing.reviews) { %>
         <div class="card col-5 mb-3 ms-3">
-            <div class="card-body"></div>
-            <h5 class="card-title">john doe</h5>
             <div class="card-body">
-                <h5 class="card-title">john doe</h5>
+                <p class="card-title"><b>By: <%= review.author ? review.author.username : 'Anonymous' %></b></p>
                 <p class="card-text"><b>Rating:</b> <%= review.rating %></p>
                 <p class="card-text"><b>Comment:</b> <%= review.comment %></p>
+                <% if(currentUser && review.author && review.author._id.equals(currentUser._id)) { %>
                 <form class="mb-3" method="POST" action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE">
                     <button class="btn btn-sm btn-dark">Delete</button>
                 </form>
+                <% } %>
             </div>
         </div>
     <% } %>
@@ -62,3 +65,4 @@
 </div>
 </body>
  </div>
+

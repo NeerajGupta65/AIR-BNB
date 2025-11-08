@@ -22,9 +22,14 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(methodOverride('_method'));
 
 const sessionConfig = {
-  secret:'supersecretkey',
-  resave:false,
-  saveUninitialized:true,
+  secret: 'supersecretkey',
+  resave: false,
+  saveUninitialized: true,
+  cookie: {
+    httpOnly: true,
+    expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
+    maxAge: 1000 * 60 * 60 * 24 * 7
+  }
 };
 
 
@@ -43,7 +48,7 @@ passport.deserializeUser(User.deserializeUser());
 
 
 app.get('/', (req, res) => {
-  res.send('Hi i am root');
+  res.redirect('/listings');
 });
 
 const reviews = require('./routes/review.js');
@@ -61,6 +66,7 @@ async function main() {
 app.use((req, res, next) => {
   res.locals.success = req.flash('success');
   res.locals.error = req.flash('error');
+  res.locals.currentUser = req.user;
   next();
 });
 
@@ -79,8 +85,6 @@ app.use((err, req, res, next) => {
   let { statusCode = 500, message = "Something went wrong!" } = err;
   res.status(statusCode).render("error.ejs", { message });
 });
-
-
 
 
 
