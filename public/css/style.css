@@ -22,8 +22,39 @@
   /* Remove 'overflow-y: scroll;' if you want the default scroll behavior */
 }
 
-.container{
-    flex:1;
+.container {
+    flex: 1;
+    max-width: 1320px !important;
+    margin: 0 auto !important;
+    padding: 0 2rem !important;
+}
+
+/* Main content margin */
+.main-content {
+    margin: 0 auto;
+    max-width: 1320px;
+    padding: 0 2rem;
+    width: 100%;
+}
+
+/* Responsive margins */
+@media (max-width: 768px) {
+    .main-content {
+        padding: 0 1rem;
+    }
+}
+
+/* All listings page specific styles */
+.listings-container {
+    margin: 2rem auto;
+    max-width: 1320px;
+    padding: 0 2rem;
+}
+
+.section-heading {
+    margin: 2rem 0;
+    font-size: 2rem;
+    font-weight: bold;
 }
 
 

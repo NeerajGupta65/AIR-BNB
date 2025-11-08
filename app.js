@@ -52,7 +52,7 @@ app.get('/', (req, res) => {
 });
 
 const reviews = require('./routes/review.js');
-const lisiting = require('./routes/listing.js'); // Should be "listing"
+const listing = require('./routes/listing.js');
 
 
 main()
@@ -71,7 +71,7 @@ app.use((req, res, next) => {
 });
 
 app.use('/', userRoutes);
-app.use('/listings', lisiting);
+app.use('/listings', listing);
 app.use('/listings/:id/reviews', reviews);
 
 

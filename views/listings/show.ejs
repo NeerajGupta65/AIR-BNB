@@ -17,7 +17,7 @@
   </div>
 </div>
     <br>
-    <% if(currentUser && listing.owner && currentUser._id.equals(listing.owner._id)) { %>
+    <!--  if(currentUser && listing.owner && currentUser._id.equals(listing.owner._id)) { %> -->
     <div class="btns">
     <a href="/listings/<%= listing._id %>/edit" class="btn btn-dark col-1 add-btn">Edit</a>
    
@@ -25,10 +25,11 @@
         <button type="submit" class="btn btn-dark ">Delete</button>
     </form>
     </div>
-    <% } %>
+    <!-- } %> -->
     
     <div class="mb-3 mt-3">
         <hr/>
+        <% if(currentUser) { %>
     <h4><b>Leave a Review</b></h4>
     <form action ="/listings/<%= listing._id %>/reviews" method="POST" novalidate class="needs-validation">
         <div class="mb-3 mt-3">
@@ -42,6 +43,7 @@
         <div class="invalid-feedback">Please enter a comment.</div>
         <button type="submit" class="btn btn-outline-dark mt-2">Submit Review</button>
     </form>
+    <% } %>
 </div>
 <hr/>
 
@@ -50,7 +52,7 @@
     <% for( let review of listing.reviews) { %>
         <div class="card col-5 mb-3 ms-3">
             <div class="card-body">
-                <p class="card-title"><b>By: <%= review.author ? review.author.username : 'Anonymous' %></b></p>
+                <p class="card-title"><b>By:@<%= review.author ? review.author.username : 'Anonymous' %></b></p>
                 <p class="card-text"><b>Rating:</b> <%= review.rating %></p>
                 <p class="card-text"><b>Comment:</b> <%= review.comment %></p>
                 <% if(currentUser && review.author && review.author._id.equals(currentUser._id)) { %>
